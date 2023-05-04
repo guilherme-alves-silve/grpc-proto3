@@ -5,3 +5,17 @@
 
 ### Generated code location:
 ![gradle generated proto classes location](proto_generated.png)
+
+## Alternative Run
+
+```
+gradle simple
+gradle complex
+gradle enums
+gradle maps
+gradle oneofs
+gradle io
+gradle json
+```
+
+same applies for `./gradlew` or `./gradlew.bat`
