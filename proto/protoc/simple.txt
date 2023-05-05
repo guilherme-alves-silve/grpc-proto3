@@ -1,0 +1,9 @@
+id: 42
+is_simple: true
+name: "My name"
+sample_list: 1
+sample_list: 2
+sample_list: 3
+sample_list: 4
+sample_list: 5
+sample_list: 6

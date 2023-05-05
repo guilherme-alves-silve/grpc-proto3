@@ -1,0 +1,66 @@
+plugins {
+    id "com.google.protobuf" version "0.9.2"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'com.google.protobuf'
+
+group = 'br.com.guilhermealvessilve'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+ext {
+    logbackVersion = "1.4.6"
+    grpcVersion = "1.54.1"
+    protobufVersion = "3.22.3"
+    lombokVersion = "1.18.24"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+}
+
+dependencies {
+    implementation("ch.qos.logback:logback-classic:${logbackVersion}")
+
+    implementation("com.google.protobuf:protobuf-java:${protobufVersion}")
+    implementation("com.google.protobuf:protobuf-java-util:${protobufVersion}")
+
+    implementation("io.grpc:grpc-netty-shaded:${grpcVersion}")
+    implementation("io.grpc:grpc-protobuf:${grpcVersion}")
+    implementation("io.grpc:grpc-stub:${grpcVersion}")
+
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation("org.junit.jupiter:junit-jupiter")
+
+    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+}
+
+/*
+sourceSets.main.java.srcDir new File(buildDir, 'generated/source')
+idea {
+    module {
+        generatedSourceDirs += file('build/generated/source')
+    }
+}
+ */
+
+test {
+    useJUnitPlatform()
+}

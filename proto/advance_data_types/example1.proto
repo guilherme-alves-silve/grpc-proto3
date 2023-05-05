@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message Account {
+	//...
+	oneof phone_or_email {
+		string phone = 3;
+		string email = 4;
+	}
+}
