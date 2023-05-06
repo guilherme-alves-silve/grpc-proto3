@@ -53,6 +53,7 @@ dependencies {
     implementation("io.grpc:grpc-stub:${grpcVersion}")
 
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    compileOnly("org.apache.tomcat:annotations-api:6.0.53")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
