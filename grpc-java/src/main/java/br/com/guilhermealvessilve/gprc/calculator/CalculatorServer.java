@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
+/**
+ * [Exercise] Sum API
+ */
 @Slf4j
 public class CalculatorServer {
 

@@ -1,7 +1,7 @@
 package br.com.guilhermealvessilve.gprc.calculator;
 
-import br.com.proto.calculator.CalculatorRequest;
-import br.com.proto.calculator.CalculatorResponse;
+import br.com.proto.calculator.SumRequest;
+import br.com.proto.calculator.SumResponse;
 import br.com.proto.calculator.CalculatorServiceGrpc;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.ManagedChannel;
@@ -35,7 +35,7 @@ public class CalculatorClient {
 
     private static void doSumBlocking(ManagedChannel channel) {
         CalculatorServiceGrpc.CalculatorServiceBlockingStub stub = CalculatorServiceGrpc.newBlockingStub(channel);
-        CalculatorResponse response = stub.sum(CalculatorRequest.newBuilder()
+        SumResponse response = stub.sum(SumRequest.newBuilder()
                         .setNumber(5)
                         .addNumbers(10)
                         .build());
@@ -44,7 +44,7 @@ public class CalculatorClient {
 
     private static void doSumFuture(ExecutorService executor, ManagedChannel channel) {
         CalculatorServiceGrpc.CalculatorServiceFutureStub stub = CalculatorServiceGrpc.newFutureStub(channel);
-        ListenableFuture<CalculatorResponse> responseListenable = stub.sum(CalculatorRequest.newBuilder()
+        ListenableFuture<SumResponse> responseListenable = stub.sum(SumRequest.newBuilder()
                 .setNumber(10L)
                 .addAllNumbers(List.of(3L, 5L, 20L))
                 .build());

@@ -5,15 +5,15 @@ package calculator;
 option java_package = "br.com.proto.calculator";
 option java_multiple_files = true;
 
-message CalculatorRequest {
+message SumRequest {
   int64 number = 1;
   repeated int64 numbers = 2;
 }
 
-message CalculatorResponse {
+message SumResponse {
   int64 sum = 1;
 }
 
 service CalculatorService {
-  rpc sum(CalculatorRequest) returns (CalculatorResponse);
+  rpc sum(SumRequest) returns (SumResponse);
 }
