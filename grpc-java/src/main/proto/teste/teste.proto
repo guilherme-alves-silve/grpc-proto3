@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package teste;
+
+option java_package = "br.com.proto.teste";
+option java_multiple_files = true;
+
+message TesteMessage {
+
+}
+
+service TesteService {
+
+}
