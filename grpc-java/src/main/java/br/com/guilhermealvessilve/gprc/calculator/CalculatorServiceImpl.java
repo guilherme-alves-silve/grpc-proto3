@@ -1,8 +1,6 @@
 package br.com.guilhermealvessilve.gprc.calculator;
 
-import br.com.proto.calculator.SumRequest;
-import br.com.proto.calculator.SumResponse;
-import br.com.proto.calculator.CalculatorServiceGrpc;
+import br.com.proto.calculator.*;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +12,7 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
 
     @Override
     public void sum(SumRequest request, StreamObserver<SumResponse> responseObserver) {
-        LOG.info("Request: " + request);
+        LOG.info("Request sum: " + request);
         long sum = Stream.of(
                     Stream.of(request.getNumber()),
                     request.getNumbersList().stream()
@@ -27,6 +25,27 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
-        LOG.info("Response: " + response);
+        LOG.info("Response sum: " + response);
+    }
+
+    @Override
+    public void prime(PrimeRequest request, StreamObserver<PrimeResponse> responseObserver) {
+        LOG.info("Request prime: " + request);
+        long k = 2;
+        long n = request.getNumber();
+        while (n > 1) {
+            if (n % k == 0) {
+                var response = PrimeResponse.newBuilder()
+                        .setPrime(k)
+                        .build();
+                responseObserver.onNext(response);
+                n = n / k;
+                LOG.info("Response prime: " + response);
+            } else {
+                k = k + 1;
+            }
+        }
+
+        responseObserver.onCompleted();
     }
 }

@@ -1,5 +1,6 @@
 package br.com.guilhermealvessilve.gprc.calculator;
 
+import br.com.proto.calculator.PrimeRequest;
 import br.com.proto.calculator.SumRequest;
 import br.com.proto.calculator.SumResponse;
 import br.com.proto.calculator.CalculatorServiceGrpc;
@@ -25,6 +26,7 @@ public class CalculatorClient {
 
         doSumFuture(executor, channel);
         doSumBlocking(channel);
+        doPrimeBlocking(channel);
 
         executor.shutdown();
         if(!executor.awaitTermination(1, TimeUnit.MINUTES)) {
@@ -59,5 +61,13 @@ public class CalculatorClient {
                 LOG.error("Error: ", ex);
             }
         }, executor);
+    }
+
+    private static void doPrimeBlocking(ManagedChannel channel) {
+        CalculatorServiceGrpc.CalculatorServiceBlockingStub stub = CalculatorServiceGrpc.newBlockingStub(channel);
+        stub.prime(PrimeRequest.newBuilder()
+                                .setNumber(120)
+                                .build())
+                .forEachRemaining(response -> LOG.info("Response: " + response.getPrime()));
     }
 }
