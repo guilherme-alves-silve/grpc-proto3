@@ -36,7 +36,7 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
         while (n > 1) {
             if (n % k == 0) {
                 var response = PrimeResponse.newBuilder()
-                        .setPrime(k)
+                        .setPrimeFactor(k)
                         .build();
                 responseObserver.onNext(response);
                 n = n / k;

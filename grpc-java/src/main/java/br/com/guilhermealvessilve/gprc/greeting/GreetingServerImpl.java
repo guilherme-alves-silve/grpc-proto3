@@ -4,6 +4,7 @@ import br.com.proto.greeting.GreetingRequest;
 import br.com.proto.greeting.GreetingResponse;
 import br.com.proto.greeting.GreetingServiceGrpc;
 import io.grpc.stub.StreamObserver;
+import io.grpc.stub.StreamObservers;
 
 public class GreetingServerImpl extends GreetingServiceGrpc.GreetingServiceImplBase {
 
@@ -26,5 +27,31 @@ public class GreetingServerImpl extends GreetingServiceGrpc.GreetingServiceImplB
         }
 
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<GreetingRequest> longGreet(StreamObserver<GreetingResponse> responseObserver) {
+        var stringBuilderResponse = new StringBuilder();
+        return new StreamObserver<>() {
+            @Override
+            public void onNext(GreetingRequest request) {
+                stringBuilderResponse.append("Hello ")
+                    .append(request.getFirstName())
+                    .append("!\n");
+            }
+
+            @Override
+            public void onError(Throwable th) {
+                responseObserver.onError(th);
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onNext(GreetingResponse.newBuilder()
+                                .setResult(stringBuilderResponse.toString())
+                                .build());
+                responseObserver.onCompleted();
+            }
+        };
     }
 }

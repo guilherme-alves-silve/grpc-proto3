@@ -68,6 +68,6 @@ public class CalculatorClient {
         stub.prime(PrimeRequest.newBuilder()
                                 .setNumber(120)
                                 .build())
-                .forEachRemaining(response -> LOG.info("Response: " + response.getPrime()));
+                .forEachRemaining(response -> LOG.info("Response: " + response.getPrimeFactor()));
     }
 }
