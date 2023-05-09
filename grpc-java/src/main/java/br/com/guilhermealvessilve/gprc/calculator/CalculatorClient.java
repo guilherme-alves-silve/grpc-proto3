@@ -22,7 +22,9 @@ public class CalculatorClient {
         doSumFuture(executor, channel);
         doSumBlocking(channel);
         doPrimeBlocking(channel);
-        doAvgBlocking(channel);
+        doAvgStream(channel);
+        doMaxStream(channel);
+        doSqrtBlocking(channel);
 
         executor.shutdown();
         if(!executor.awaitTermination(1, TimeUnit.MINUTES)) {
@@ -67,7 +69,7 @@ public class CalculatorClient {
                 .forEachRemaining(response -> LOG.info("Response (prime): " + response.getPrimeFactor()));
     }
 
-    private static void doAvgBlocking(ManagedChannel channel) throws InterruptedException {
+    private static void doAvgStream(ManagedChannel channel) throws InterruptedException {
         CalculatorServiceGrpc.CalculatorServiceStub stub = CalculatorServiceGrpc.newStub(channel);
 
         var latch = new CountDownLatch(1);
@@ -97,6 +99,56 @@ public class CalculatorClient {
 
         requestObserver.onCompleted();
 
-        latch.await();
+        if(!latch.await(3, TimeUnit.SECONDS)) {
+            LOG.warn("Not finished on time!");
+        }
+    }
+
+    private static void doMaxStream(ManagedChannel channel) throws InterruptedException {
+
+        CalculatorServiceGrpc.CalculatorServiceStub stub = CalculatorServiceGrpc.newStub(channel);
+        var numbers = List.of(1, 5, 3, 6, 2, 20);
+        var latch = new CountDownLatch(1);
+        StreamObserver<MaxRequest> requestObserver = stub.max(new StreamObserver<>() {
+            @Override
+            public void onNext(MaxResponse response) {
+                LOG.info("Response (max): {}", response.getMax());
+            }
+
+            @Override
+            public void onError(Throwable th) {
+                LOG.error("Error: ", th);
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+
+        numbers.forEach(number -> requestObserver.onNext(MaxRequest.newBuilder()
+                .setNumber(number)
+                .build()));
+        requestObserver.onCompleted();
+
+        if(!latch.await(3, TimeUnit.SECONDS)) {
+            LOG.warn("Not finished on time!");
+        }
+    }
+
+    private static void doSqrtBlocking(ManagedChannel channel) {
+        CalculatorServiceGrpc.CalculatorServiceBlockingStub stub = CalculatorServiceGrpc.newBlockingStub(channel);
+        SqrtResponse response = stub.sqrt(SqrtRequest.newBuilder()
+                .setNumber(25)
+                .build());
+        LOG.info("Sqrt for 25: {}", response.getSqrt());
+
+        try {
+            stub.sqrt(SqrtRequest.newBuilder()
+                    .setNumber(-25)
+                    .build());
+        } catch (RuntimeException ex) {
+            LOG.error("Error: ", ex);
+        }
     }
 }

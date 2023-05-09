@@ -1,6 +1,7 @@
 package br.com.guilhermealvessilve.gprc.calculator;
 
 import br.com.proto.calculator.*;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,5 +79,51 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
                 responseObserver.onCompleted();
             }
         };
+    }
+
+    @Override
+    public StreamObserver<MaxRequest> max(StreamObserver<MaxResponse> responseObserver) {
+        return new StreamObserver<>() {
+            long max = Long.MIN_VALUE;
+
+            @Override
+            public void onNext(MaxRequest request) {
+                var number = request.getNumber();
+                if (number > max) {
+                    max = number;
+                    responseObserver.onNext(MaxResponse.newBuilder()
+                            .setMax(max)
+                            .build());
+                }
+            }
+
+            @Override
+            public void onError(Throwable th) {
+                LOG.error("Error: ", th);
+                responseObserver.onError(th);
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
+    @Override
+    public void sqrt(SqrtRequest request, StreamObserver<SqrtResponse> responseObserver) {
+        long number = request.getNumber();
+        if (number < 0) {
+            responseObserver.onError(Status.INVALID_ARGUMENT
+                            .withDescription("The number being sent cannot be negative!")
+                            .augmentDescription("Number: " + number)
+                            .asRuntimeException());
+            return;
+        }
+
+        responseObserver.onNext(SqrtResponse.newBuilder()
+                .setSqrt(Math.sqrt(number))
+                .build());
+        responseObserver.onCompleted();
     }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class GreetingClient {
@@ -21,7 +22,8 @@ public class GreetingClient {
             LOG.warn("Need one argument!");
             //args = new String[]{ "greet" };
             //args = new String[]{ "greet_many_times" };
-            args = new String[]{ "do_long_greet" };
+            //args = new String[]{ "long_greet" };
+            args = new String[]{ "greet_everyone" };
         }
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50_051)
@@ -31,7 +33,8 @@ public class GreetingClient {
         switch (args[0]) {
             case "greet" -> doGreet(channel);
             case "greet_many_times" -> doGreetManyTimes(channel);
-            case "do_long_greet" -> doLongGreet(channel);
+            case "long_greet" -> doLongGreet(channel);
+            case "greet_everyone" -> doGreetEveryone(channel);
             default -> LOG.warn("Invalid parameter: " + args[0]);
         }
 
@@ -91,6 +94,41 @@ public class GreetingClient {
 
         requestObserver.onCompleted();
 
-        latch.await();
+        if(!latch.await(3, TimeUnit.SECONDS)) {
+            LOG.warn("Not finished on time!");
+        }
+    }
+
+    private static void doGreetEveryone(ManagedChannel channel) throws InterruptedException {
+        GreetingServiceGrpc.GreetingServiceStub stub = GreetingServiceGrpc.newStub(channel);
+
+        var names = new ArrayList<String>();
+        Collections.addAll(names, "John Wick", "Guilherme", "Marie", "Larissa");
+        var latch = new CountDownLatch(1);
+        StreamObserver<GreetingRequest> requestObserver = stub.greetEveryone(new StreamObserver<>() {
+            @Override
+            public void onNext(GreetingResponse response) {
+                LOG.info("Response: {}", response.getResult());
+            }
+
+            @Override
+            public void onError(Throwable th) {
+                LOG.error("Server error: ", th);
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+
+        names.forEach(name -> requestObserver.onNext(GreetingRequest.newBuilder()
+                .setFirstName(name)
+                .build()));
+        requestObserver.onCompleted();
+
+        if(!latch.await(3, TimeUnit.SECONDS)) {
+            LOG.warn("Not finished on time!");
+        }
     }
 }
