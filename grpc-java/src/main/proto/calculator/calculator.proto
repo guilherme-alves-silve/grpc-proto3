@@ -2,33 +2,12 @@ syntax = "proto3";
 
 package calculator;
 
+import "calculator/sum.proto";
+import "calculator/prime.proto";
+import "calculator/avg.proto";
+
 option java_package = "br.com.proto.calculator";
 option java_multiple_files = true;
-
-message SumRequest {
-  int64 number = 1;
-  repeated int64 numbers = 2;
-}
-
-message SumResponse {
-  int64 sum = 1;
-}
-
-message PrimeRequest {
-  int64 number = 1;
-}
-
-message PrimeResponse {
-  int64 prime_factor = 1;
-}
-
-message AvgRequest {
-  int64 number = 1;
-}
-
-message AvgResponse {
-  double avg = 1;
-}
 
 service CalculatorService {
   rpc sum(SumRequest) returns (SumResponse);
