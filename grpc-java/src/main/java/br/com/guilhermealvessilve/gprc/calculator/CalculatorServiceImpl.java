@@ -4,6 +4,7 @@ import br.com.proto.calculator.*;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -47,5 +48,35 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
         }
 
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<AvgRequest> avg(StreamObserver<AvgResponse> responseObserver) {
+        var numbers = new ArrayList<Long>();
+
+        return new StreamObserver<>() {
+            @Override
+            public void onNext(AvgRequest request) {
+                LOG.info("Request avg: " + request);
+                numbers.add(request.getNumber());
+            }
+
+            @Override
+            public void onError(Throwable th) {
+                responseObserver.onError(th);
+            }
+
+            @Override
+            public void onCompleted() {
+                double avg = numbers.stream()
+                                .mapToLong(number -> number)
+                                .average()
+                                .orElse(0);
+                responseObserver.onNext(AvgResponse.newBuilder()
+                                .setAvg(avg)
+                                .build());
+                responseObserver.onCompleted();
+            }
+        };
     }
 }

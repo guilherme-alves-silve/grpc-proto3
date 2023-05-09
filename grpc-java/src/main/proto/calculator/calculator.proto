@@ -22,7 +22,16 @@ message PrimeResponse {
   int64 prime_factor = 1;
 }
 
+message AvgRequest {
+  int64 number = 1;
+}
+
+message AvgResponse {
+  double avg = 1;
+}
+
 service CalculatorService {
   rpc sum(SumRequest) returns (SumResponse);
   rpc prime(PrimeRequest) returns (stream PrimeResponse);
+  rpc avg(stream AvgRequest) returns (AvgResponse);
 }
