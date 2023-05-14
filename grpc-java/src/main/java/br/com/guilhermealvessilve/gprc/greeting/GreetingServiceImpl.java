@@ -3,7 +3,9 @@ package br.com.guilhermealvessilve.gprc.greeting;
 import br.com.proto.greeting.GreetingRequest;
 import br.com.proto.greeting.GreetingResponse;
 import br.com.proto.greeting.GreetingServiceGrpc;
+import io.grpc.Context;
 import io.grpc.stub.StreamObserver;
+import lombok.SneakyThrows;
 
 public class GreetingServiceImpl extends GreetingServiceGrpc.GreetingServiceImplBase {
 
@@ -74,5 +76,24 @@ public class GreetingServiceImpl extends GreetingServiceGrpc.GreetingServiceImpl
                 responseObserver.onCompleted();
             }
         };
+    }
+
+    @Override
+    public void greetWithDeadline(GreetingRequest request, StreamObserver<GreetingResponse> responseObserver) {
+        Context context = Context.current();
+
+        try {
+            for (int i = 0; i < 3; ++i) {
+                if (context.isCancelled()) return;
+                Thread.sleep(100);
+            }
+
+            responseObserver.onNext(GreetingResponse.newBuilder()
+                    .setResult("Hello " + request.getFirstName())
+                    .build());
+            responseObserver.onCompleted();
+        } catch (InterruptedException ex) {
+            responseObserver.onError(ex);
+        }
     }
 }

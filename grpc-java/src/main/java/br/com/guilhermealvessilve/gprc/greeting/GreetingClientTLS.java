@@ -5,8 +5,11 @@ import br.com.proto.greeting.GreetingResponse;
 import br.com.proto.greeting.GreetingServiceGrpc;
 import io.grpc.*;
 import io.grpc.stub.StreamObserver;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,11 +18,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class GreetingClient {
+public class GreetingClientTLS {
 
     private static final int NO_OPTION_SELECTED = -1;
 
-    public static void main(String[] args) throws InterruptedException {
+    @SneakyThrows
+    public static void main(String[] args) {
         final var options = new String[]{
                 "greet",
                 "greet_many_times",
@@ -27,7 +31,7 @@ public class GreetingClient {
                 "greet_everyone",
                 "greet_with_deadline"
         };
-        int option = 4;
+        int option = 0;
 
         if (args.length == 0) {
             if (option >= 0 && option < options.length) {
@@ -38,8 +42,10 @@ public class GreetingClient {
             }
         }
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50_051)
-                .usePlaintext()
+        ChannelCredentials credentials = TlsChannelCredentials.newBuilder()
+                .trustManager(new File("ssl/ca.crt"))
+                .build();
+        ManagedChannel channel = Grpc.newChannelBuilderForAddress("localhost", 50_051, credentials)
                 .build();
 
         switch (args[0]) {
