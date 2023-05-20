@@ -1,6 +1,7 @@
 package br.com.guilhermealvessilve.gprc.calculator;
 
 import io.grpc.ServerBuilder;
+import io.grpc.protobuf.services.ProtoReflectionService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class CalculatorServer {
 
         var server = ServerBuilder.forPort(port)
                 .addService(new CalculatorServiceImpl())
+                .addService(ProtoReflectionService.newInstance())
                 .build();
 
         server.start();

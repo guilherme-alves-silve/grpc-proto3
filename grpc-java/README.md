@@ -5,3 +5,9 @@
 ## References
 
 * [Course repository](https://github.com/Clement-Jean/grpc-java-course)
+* [CLI Evans](https://github.com/ktr0731/evans)
+
+## CLI Evans
+
+``evans --host localhost --port 50051 --reflection repl``
+``./evans.exe --host localhost --port 50051 --reflection repl``
