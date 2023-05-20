@@ -24,6 +24,7 @@ ext {
     grpcVersion = "1.54.1"
     protobufVersion = "3.22.3"
     lombokVersion = "1.18.24"
+    mongodbVersion = "4.9.1"
 }
 
 protobuf {
@@ -52,6 +53,8 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:${grpcVersion}")
     implementation("io.grpc:grpc-stub:${grpcVersion}")
     implementation("io.grpc:grpc-services:${grpcVersion}")
+
+    implementation("org.mongodb:mongodb-driver-sync:${mongodbVersion}")
 
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     compileOnly("org.apache.tomcat:annotations-api:6.0.53")
